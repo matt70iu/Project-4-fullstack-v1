@@ -1,1 +1,1 @@
-web: gunicorn studyzone2021.wsgi
+web: gunicorn studyzone.wsgi
