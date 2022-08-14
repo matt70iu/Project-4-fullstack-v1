@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q
+from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic
 from .forms import RoomForm
 
@@ -14,18 +15,22 @@ from .forms import RoomForm
 
 
 def loginView(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+            # Redirect to a success page.
+        else:
+            messages.success(
+                request, 'Invalid login details.. please try again')
+            return redirect('base/login_register.html')
 
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-    try:
-        user = User.objects.get(username=username)
-    except:
-        messages.error(request, 'User does not exist')
-
-    context = {}
-    return render(request, 'base/login_register.html', context)
+    else:
+        context = {}
+        return render(request, 'base/login_register.html', context)
 
 
 def home(request):
